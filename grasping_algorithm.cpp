@@ -1,16 +1,6 @@
 /*
 run this program using:
-
-reset && cmake .. && make && ./grasping_algorithm simulation ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled.pcd ../raw_object_pcd_files/storage_bin_0.pcd ../raw_object_pcd_files/storage_bin_1.pcd ../raw_object_pcd_files/storage_bin_2.pcd ../raw_object_pcd_files/storage_bin_tf.txt
-
-reset && cmake .. && make && ./grasping_algorithm simulation ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled.pcd ../raw_object_pcd_files/dish_brush_0.pcd ../raw_object_pcd_files/dish_brush_1.pcd ../raw_object_pcd_files/dish_brush_2.pcd ../raw_object_pcd_files/dish_brush_tf.txt
-
-reset && cmake .. && make && ./grasping_algorithm simulation ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled.pcd ../raw_object_pcd_files/sprayer_0.pcd ../raw_object_pcd_files/sprayer_1.pcd ../raw_object_pcd_files/sprayer_2.pcd ../raw_object_pcd_files/sprayer_tf.txt
-
-reset && cmake .. && make -j7 && ./grasping_algorithm simulation ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd ../raw_object_pcd_files/cup_without_handle_0.pcd ../raw_object_pcd_files/cup_without_handle_1.pcd ../raw_object_pcd_files/cup_without_handle_2.pcd ../raw_object_pcd_files/cup_without_handle_tf.txt
-
-reset && cmake .. && make -j7 && ./grasping_algorithm simulation ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd ../raw_object_pcd_files/cup_without_handle
-
+reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd 3_view ../raw_object_pcd_files/cup_without_handle
 */
 
 #include <pcl/point_types.h>
@@ -24,24 +14,24 @@ reset && cmake .. && make -j7 && ./grasping_algorithm simulation ../gripper_pcd_
 #include "include/useful_implementations.h"
 #include "include/grasping_algorithm.h"
 #include <math.h>
-#include "QuadProg++.hh"
+//#include "include/QuadProg++.hh"
 
 
 int main (int argc, char** argv){
   begin = clock();
 	time_to_load_clouds_begin = clock();
 	
-	mode = argv[1];
-  gripper_file_name = argv[2];
+	gripper_file_name = argv[1];
+  mode = argv[2];
   
-  if(mode=="simulation"){
+  if(mode=="3_view"){
     object_file_name = argv[3];
 		file_name1 = object_file_name+"_0.pcd";
 		file_name2 = object_file_name+"_1.pcd";
 		file_name3 = object_file_name+"_2.pcd";
 		transformation_matrix_file_name = object_file_name+"_tf.txt";
   }
-  else if(mode=="experiment"){
+  else if(mode=="single"){
     object_file_name = argv[3];
   }
   
@@ -98,9 +88,9 @@ int main (int argc, char** argv){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Downsampling, Regestering, segmenting object's 3 view point clouds
   reader.read(gripper_file_name, *gripper_cloud_downsampled_in_gripper_frame_xyz);
-  if(mode=="simulation")
+  if(mode=="3_view")
     load_object_3_view_point_clouds_and_corresponding_transforms();
-  else if(mode=="experiment"){
+  else if(mode=="single"){
   }
   initial_overhead_begin = clock();
   registering_downsampling_segmenting_3_view_point_clouds(scene_cloud_xyz_1, tm1,   scene_cloud_xyz_2, tm2,   scene_cloud_xyz_3, tm3,

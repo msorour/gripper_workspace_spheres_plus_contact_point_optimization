@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/business/gripper_workspace_spheres_grasping_algorithm_basic/build/devel/setup.sh
