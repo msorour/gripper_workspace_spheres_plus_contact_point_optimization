@@ -4,7 +4,7 @@ rm -r build/ && mkdir build
 
 2. use the following command in the build folder:
 reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd 3_view ../3_view_object_pcd_files/cup_without_handle 4 4 4 3 3 3
-reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd single ../single_view_object_pcd_files/cocacola_bottle.pcd 4 4 4 5 5 5
+reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd single ../single_view_object_pcd_files/cocacola_bottle.pcd 10 10 10 7 7 7
 
 The algorithm takes 9 input arguments:
 1. the gripper point cloud (currently you can use the the allegro hand "allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd" and the Franka panda gripper "franka_gripper_model_cloud_plus_camera_downsampled_100.pcd")
