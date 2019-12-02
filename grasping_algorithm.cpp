@@ -1,7 +1,7 @@
 /*
 run this program using:
-reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd 3_view ../3_view_object_pcd_files/cup_without_handle
-reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd single ../single_view_object_pcd_files/cocacola_bottle.pcd
+reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd 3_view ../3_view_object_pcd_files/cup_without_handle 4 4 4 3 3 3
+reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd single ../single_view_object_pcd_files/cocacola_bottle.pcd 4 4 4 3 3 3
 */
 
 #include <pcl/point_types.h>
@@ -35,6 +35,15 @@ int main (int argc, char** argv){
   else if(mode=="single"){
     object_file_name = argv[3];
   }
+	
+	orientation_samples_in_x = atoi(argv[4]);
+  orientation_samples_in_y = atoi(argv[5]);
+  orientation_samples_in_z = atoi(argv[6]);
+  
+  object_sampling_in_x_axis = atoi(argv[7]);
+  object_sampling_in_y_axis = atoi(argv[8]);
+  object_sampling_in_z_axis = atoi(argv[9]);
+  
   
   if(gripper_file_name.find("allegro_right_hand" )!=std::string::npos){gripper_model = "allegro_right_hand";}
   else if(gripper_file_name.find("franka_gripper")!=std::string::npos){gripper_model = "franka_gripper";}
