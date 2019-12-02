@@ -1,6 +1,7 @@
 /*
 run this program using:
-reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd 3_view ../raw_object_pcd_files/cup_without_handle
+reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd 3_view ../3_view_object_pcd_files/cup_without_handle
+reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/allegro_right_hand_model_cloud_plus_camera_downsampled_100.pcd single ../single_view_object_pcd_files/cocacola_bottle.pcd
 */
 
 #include <pcl/point_types.h>
@@ -88,15 +89,19 @@ int main (int argc, char** argv){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Downsampling, Regestering, segmenting object's 3 view point clouds
   reader.read(gripper_file_name, *gripper_cloud_downsampled_in_gripper_frame_xyz);
-  if(mode=="3_view")
+  if(mode=="3_view"){
     load_object_3_view_point_clouds_and_corresponding_transforms();
+    registering_downsampling_segmenting_3_view_point_clouds(scene_cloud_xyz_1, tm1,   scene_cloud_xyz_2, tm2,   scene_cloud_xyz_3, tm3, 0.01, 0.01,
+		                                                        scene_cloud_xyz_1_transformed, scene_cloud_xyz_2_transformed, scene_cloud_xyz_3_transformed,
+		                                                        scene_cloud_xyz_1_transformed_downsampled, scene_cloud_xyz_2_transformed_downsampled, scene_cloud_xyz_3_transformed_downsampled,
+		                                                        object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz, object_cloud_downsampled_in_camera_depth_optical_frame_xyz );
+  }
   else if(mode=="single"){
+	  pcl::io::loadPCDFile<pcl::PointXYZ>(object_file_name, *scene_cloud_xyz_1);
+  	downsampling_segmenting_single_view_point_cloud_no_table( scene_cloud_xyz_1, 0.01, 0.01, object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz, object_cloud_downsampled_in_camera_depth_optical_frame_xyz );
   }
   initial_overhead_begin = clock();
-  registering_downsampling_segmenting_3_view_point_clouds(scene_cloud_xyz_1, tm1,   scene_cloud_xyz_2, tm2,   scene_cloud_xyz_3, tm3,
-                                                          scene_cloud_xyz_1_transformed, scene_cloud_xyz_2_transformed, scene_cloud_xyz_3_transformed,
-                                                          scene_cloud_xyz_1_transformed_downsampled, scene_cloud_xyz_2_transformed_downsampled, scene_cloud_xyz_3_transformed_downsampled,
-                                                          object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz, object_cloud_downsampled_in_camera_depth_optical_frame_xyz );
+  
   
   std::cout << "Object (downsampled) point cloud has:  " << object_cloud_downsampled_in_camera_depth_optical_frame_xyz->points.size()        << " data points." << std::endl;
   std::cout << "Table (downsampled) point cloud has:   " << object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz->points.size()  << " data points." << std::endl;
@@ -104,10 +109,17 @@ int main (int argc, char** argv){
   
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   load_transformations();
-  object_pose_approximation_and_sampling();
-  object_plane_pose_approximation();
-  constructing_special_ellipsoids();
-  object_plane_pose_check();
+  
+  if(mode=="3_view"){
+    object_pose_approximation_and_sampling();
+  	object_plane_pose_approximation();
+  	constructing_special_ellipsoids();
+  	object_plane_pose_check();
+  }
+  else if(mode=="single"){
+	  object_pose_approximation_and_sampling();
+	  constructing_special_ellipsoids();
+  }
   load_gripper_workspace_spheres_and_compute_centroid();
   
   

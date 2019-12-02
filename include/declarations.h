@@ -23,7 +23,6 @@ double metric_1_score_best = 0.0, metric_2_score_best = 0.0, metric_3_score_best
 
 // point clouds declarations
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_in_camera_depth_optical_frame_xyz                       (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_in_arm_hand_frame_xyz                                   (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_transformed_in_gripper_frame_xyz                        (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_transformed_in_arm_hand_frame_xyz                       (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -31,13 +30,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr     object_sampling_in_object_frame_xyz     
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_sampling_in_arm_hand_frame_xyz                                (new pcl::PointCloud<pcl::PointXYZ>);
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_downsampled_in_camera_depth_optical_frame_xyz           (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_downsampled_in_gripper_frame_xyz                        (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_cloud_downsampled_in_arm_hand_frame_xyz                       (new pcl::PointCloud<pcl::PointXYZ>);
 
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_plane_cloud_in_camera_depth_optical_frame_xyz                 (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz     (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr     object_plane_cloud_downsampled_in_gripper_frame_xyz                  (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_plane_cloud_downsampled_in_arm_hand_frame_xyz                 (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_plane_cloud_downsampled_in_object_plane_frame_xyz             (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr     object_plane_special_ellipsoid_point_cloud_in_object_plane_frame     (new pcl::PointCloud<pcl::PointXYZ>);
@@ -229,7 +226,6 @@ Eigen::Matrix4f gripper_wrt_arm_hand_frame_inverse_transform;
 // camera optical frame wrt gripper frame
 Eigen::Vector3f camera_depth_optical_frame_wrt_gripper_frame_translation;
 Eigen::Matrix3f camera_depth_optical_frame_wrt_gripper_frame_rotation;
-Eigen::Matrix4f camera_depth_optical_frame_wrt_gripper_frame_transform;
 
 
 
@@ -421,4 +417,3 @@ Eigen::Vector3f best_gripper_translation;
 
 
 #endif
-

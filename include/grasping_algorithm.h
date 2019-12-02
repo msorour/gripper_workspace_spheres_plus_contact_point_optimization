@@ -87,28 +87,19 @@ void load_transformations(void){
     gripper_wrt_arm_hand_frame_translation << 0, 0, 0.005;
     gripper_wrt_arm_hand_frame_transform << Eigen::Matrix3f::Identity(), gripper_wrt_arm_hand_frame_translation, 0,0,0,1;}
   transform.matrix() = gripper_wrt_arm_hand_frame_transform;
-  //scene_cloud_viewer->addCoordinateSystem(0.1, transform, "gripper frame", 0);
+	
   // gripper frame wrt arm hand frame [INVERSE]
   gripper_wrt_arm_hand_frame_rotation << gripper_wrt_arm_hand_frame_transform(0,0), gripper_wrt_arm_hand_frame_transform(0,1), gripper_wrt_arm_hand_frame_transform(0,2),
                                          gripper_wrt_arm_hand_frame_transform(1,0), gripper_wrt_arm_hand_frame_transform(1,1), gripper_wrt_arm_hand_frame_transform(1,2),
                                          gripper_wrt_arm_hand_frame_transform(2,0), gripper_wrt_arm_hand_frame_transform(2,1), gripper_wrt_arm_hand_frame_transform(2,2);
   gripper_wrt_arm_hand_frame_inverse_transform << gripper_wrt_arm_hand_frame_rotation.transpose(), -gripper_wrt_arm_hand_frame_rotation.transpose()*gripper_wrt_arm_hand_frame_translation, 0,0,0,1; // from khalil's book page 21
   
-  // camera optical frame wrt gripper frame
-  camera_depth_optical_frame_wrt_gripper_frame_transform = gripper_wrt_arm_hand_frame_inverse_transform*camera_depth_optical_frame_wrt_arm_hand_frame_transform;
-  
-  
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Transforming point clouds
   // clouds in arm hand frame
   pcl::transformPointCloud(*object_cloud_downsampled_in_camera_depth_optical_frame_xyz,          *object_cloud_downsampled_in_arm_hand_frame_xyz,         camera_depth_optical_frame_wrt_arm_hand_frame_transform);
-  pcl::transformPointCloud(*object_cloud_in_camera_depth_optical_frame_xyz,                      *object_cloud_in_arm_hand_frame_xyz,                     camera_depth_optical_frame_wrt_arm_hand_frame_transform);
   pcl::transformPointCloud(*object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz,    *object_plane_cloud_downsampled_in_arm_hand_frame_xyz,   camera_depth_optical_frame_wrt_arm_hand_frame_transform);
   pcl::transformPointCloud(*gripper_cloud_downsampled_in_gripper_frame_xyz,                      *gripper_cloud_downsampled_in_arm_hand_frame_xyz,        gripper_wrt_arm_hand_frame_transform);
-  
-  // clouds in gripper frame
-  pcl::transformPointCloud(*object_cloud_downsampled_in_camera_depth_optical_frame_xyz,          *object_cloud_downsampled_in_gripper_frame_xyz,          camera_depth_optical_frame_wrt_gripper_frame_transform);
-  pcl::transformPointCloud(*object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz,    *object_plane_cloud_downsampled_in_gripper_frame_xyz,    camera_depth_optical_frame_wrt_gripper_frame_transform);
 }
 
 
@@ -1682,17 +1673,12 @@ void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pc
                                                               Eigen::Matrix4f tm2,                                                                 // input
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_3,                             // input
                                                               Eigen::Matrix4f tm3,                                                                 // input
+                                                              double leaf_size,                                                                    // input
+                                                              double distance_threshold,                                                           // input
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  table_cloud_xyz_downsampled,                   // output
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  object_cloud_xyz_downsampled ){                // output
 
 
-
-
-
-
-  double leaf_size = 0.01;
-  double distance_threshold = 0.01;
-  
   pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_1_transformed                 (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_2_transformed                 (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_3_transformed                 (new pcl::PointCloud<pcl::PointXYZ>);
@@ -1837,6 +1823,8 @@ void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pc
                                                               Eigen::Matrix4f tm2,                                                                 // input
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_3,                             // input
                                                               Eigen::Matrix4f tm3,                                                                 // input
+                                                              double leaf_size,                                                                    // input
+                                                              double distance_threshold,                                                           // input
                                                               
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_1_transformed,                 // output
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_2_transformed,                 // output
@@ -1850,22 +1838,11 @@ void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pc
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  object_cloud_xyz_downsampled ){                // output
 
 
-
-
-
-
-  double leaf_size = 0.01;
-  double distance_threshold = 0.01;
-  
   pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_transformed_downsampled       (new pcl::PointCloud<pcl::PointXYZ>);
   
   double i;
   pcl::VoxelGrid<pcl::PointXYZ> vg;
   pcl::PCDWriter writer;
-  
-  //std::cout << "scene cloud 1 size [input] : " << scene_cloud_xyz_1->size() << std::endl;
-  //std::cout << "scene cloud 2 size [input] : " << scene_cloud_xyz_2->size() << std::endl;
-  //std::cout << "scene cloud 3 size [input] : " << scene_cloud_xyz_3->size() << std::endl;
   
   pcl::transformPointCloud(*scene_cloud_xyz_1, *scene_cloud_xyz_1_transformed, tm1);
   pcl::transformPointCloud(*scene_cloud_xyz_2, *scene_cloud_xyz_2_transformed, tm2);
@@ -1989,16 +1966,170 @@ void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pc
 }
 
 
+
+
+void downsampling_segmenting_single_view_point_cloud( pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_1,                             // input
+																											double leaf_size,                                                                    // input
+                                                      double distance_threshold,                                                           // input
+                                                      pcl::PointCloud<pcl::PointXYZ>::Ptr&  table_cloud_xyz_downsampled,                   // output
+                                                      pcl::PointCloud<pcl::PointXYZ>::Ptr&  object_cloud_xyz_downsampled ){                // output
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_1_transformed                 (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_1_transformed_downsampled     (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_transformed_downsampled       (new pcl::PointCloud<pcl::PointXYZ>);
+  
+  double i;
+  pcl::VoxelGrid<pcl::PointXYZ> vg;
+  pcl::PCDWriter writer;
+  
+  pcl::transformPointCloud(*scene_cloud_xyz_1, *scene_cloud_xyz_1_transformed, tm1);
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // downsampling
+  vg.setInputCloud (scene_cloud_xyz_1_transformed);
+  vg.setLeafSize(leaf_size, leaf_size, leaf_size);
+  vg.filter (*scene_cloud_xyz_1_transformed_downsampled);
+  //std::cout << "PointCloud#1 after downsampling (1st pass) has: " << scene_cloud_xyz_1_transformed_downsampled->points.size() << " data points." << std::endl;
+  
+  *scene_cloud_xyz_transformed_downsampled =  *scene_cloud_xyz_1_transformed_downsampled;
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // segmentation/clustering
+  // Create the segmentation object for the planar model and set all the parameters
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setMaxIterations (100);
+  seg.setDistanceThreshold(distance_threshold);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
+
+  int nr_points = (int) scene_cloud_xyz_transformed_downsampled->points.size();
+  while(scene_cloud_xyz_transformed_downsampled->points.size() > 0.3*nr_points){
+    // Segment the largest planar component from the remaining cloud
+    seg.setInputCloud(scene_cloud_xyz_transformed_downsampled);
+    seg.segment (*inliers, *coefficients);
+    if (inliers->indices.size () == 0){
+      std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
+      break;
+    }
+
+    // Extract the planar inliers from the input cloud
+    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    extract.setInputCloud (scene_cloud_xyz_transformed_downsampled);
+    extract.setIndices (inliers);
+    extract.setNegative (false);
+
+    // Get the points associated with the planar surface
+    extract.filter(*cloud_plane);
+    
+    // Remove the planar inliers, extract the rest
+    extract.setNegative (true);
+    extract.filter (*cloud_f);
+    *scene_cloud_xyz_transformed_downsampled = *cloud_f;
+  }
+  // downsampling object cloud to ensure below 500 points
+  i = 0.0;
+  while(cloud_plane->points.size() > 500){
+    i += 0.001;
+    vg.setInputCloud(cloud_plane);
+    vg.setLeafSize(leaf_size+i, leaf_size+i, leaf_size+i);
+    vg.filter(*cloud_plane);
+  }
+  //std::cout << "plane cloud segmented/downsampled has [output]: " << cloud_plane->points.size() << " data points." << std::endl;
+  *table_cloud_xyz_downsampled = *cloud_plane;
+  // save plane cloud
+  //writer.write<pcl::PointXYZ>("table.pcd", *table_cloud_xyz_downsampled, false);
+
+  // Creating the KdTree object for the search method of the extraction
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+  tree->setInputCloud (scene_cloud_xyz_transformed_downsampled);
+
+  std::vector<pcl::PointIndices> cluster_indices;
+  pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+  ec.setClusterTolerance (0.02); // 2cm
+  ec.setMinClusterSize (100);
+  ec.setMaxClusterSize (25000);
+  ec.setSearchMethod (tree);
+  ec.setInputCloud (scene_cloud_xyz_transformed_downsampled);
+  ec.extract (cluster_indices);
+
+  int j = 0;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+  for(std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it){
+    for(std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); ++pit)
+      cloud_cluster->points.push_back (scene_cloud_xyz_transformed_downsampled->points[*pit]);
+    cloud_cluster->width = cloud_cluster->points.size ();
+    cloud_cluster->height = 1;
+    cloud_cluster->is_dense = true;
+    if(j==0)
+      break;
+    j++;
+  }
+  
+  // downsampling object cloud to ensure below arbitrary number of points
+  i = 0.0;
+  while(cloud_cluster->points.size() > desired_number_of_object_cloud_points){
+    i += 0.001;
+    vg.setInputCloud(cloud_cluster);
+    vg.setLeafSize(leaf_size+i, leaf_size+i, leaf_size+i);
+    vg.filter(*cloud_cluster);
+  }
+  *object_cloud_xyz_downsampled = *cloud_cluster;
+  
+  //std::cout << "object point cloud segmented/downsampled has [output]: " << object_cloud_xyz_downsampled->points.size() << " data points." << std::endl;
+  //std::stringstream ss;
+  //ss << "object_cloud.pcd";
+  //writer.write<pcl::PointXYZ>(ss.str(), *object_cloud_xyz_downsampled, false);
+  
+  
+
+}
+
+
+
+
+void downsampling_segmenting_single_view_point_cloud_no_table( 	pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_1,                             // input
+																																double leaf_size,                                                                    // input
+										                                            double distance_threshold,                                                           // input
+										                                            pcl::PointCloud<pcl::PointXYZ>::Ptr&  table_cloud_xyz_downsampled,                   // output
+										                                            pcl::PointCloud<pcl::PointXYZ>::Ptr&  object_cloud_xyz_downsampled ){                // output
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr       scene_cloud_xyz_downsampled         (new pcl::PointCloud<pcl::PointXYZ>);
+  
+  double i;
+  pcl::VoxelGrid<pcl::PointXYZ> vg;
+  pcl::PCDWriter writer;
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // downsampling
+  vg.setInputCloud (scene_cloud_xyz_1);
+  vg.setLeafSize(leaf_size, leaf_size, leaf_size);
+  vg.filter (*scene_cloud_xyz_downsampled);
+  
+  // downsampling object cloud to ensure below arbitrary number of points
+  i = 0.0;
+  while(scene_cloud_xyz_downsampled->points.size() > desired_number_of_object_cloud_points){
+    i += 0.001;
+    vg.setInputCloud(scene_cloud_xyz_downsampled);
+    vg.setLeafSize(leaf_size+i, leaf_size+i, leaf_size+i);
+    vg.filter(*scene_cloud_xyz_downsampled);
+  }
+  *object_cloud_xyz_downsampled = *scene_cloud_xyz_downsampled;
+}
+
+
+
+
+
 void evaluate_grasp_pose_candidates(void){
   
   workspace_centroid_wrt_gripper_frame_translation        << gripper_workspace_centroid_point_in_gripper_frame(0), gripper_workspace_centroid_point_in_gripper_frame(1), gripper_workspace_centroid_point_in_gripper_frame(2);
   workspace_centroid_wrt_gripper_frame_transform          << Eigen::Matrix3f::Identity(), workspace_centroid_wrt_gripper_frame_translation, 0,0,0,1;
   workspace_centroid_wrt_gripper_frame_transform_inverse  << Eigen::Matrix3f::Identity(), -Eigen::Matrix3f::Identity()*workspace_centroid_wrt_gripper_frame_translation, 0,0,0,1;
-  
-  // we will do translation to each object sample point in the gripper centroid frame
-  object_frame_wrt_gripper_centroid_frame_transform = workspace_centroid_wrt_gripper_frame_transform_inverse*gripper_wrt_arm_hand_frame_inverse_transform*object_transform_wrt_arm_hand_frame;
-    
-  //int number_of_iterations = 0;
   
   // GRASPING CODE
   // iterate through all points in the "object sampling cloud"
@@ -2045,12 +2176,12 @@ void evaluate_grasp_pose_candidates(void){
 					dummy_rotation = Rotx_float(initial_orientation+j*orientation_range/orientation_samples_in_x)
 													*Roty_float(initial_orientation+m*orientation_range/orientation_samples_in_y)
 													*Rotz_float(initial_orientation+n*orientation_range/orientation_samples_in_z);
-					//dummy_rotation = Rotx_float(initial_orientation+j*orientation_range/orientation_samples)*Roty_float(initial_orientation+m*orientation_range/orientation_samples)*Rotz_float(initial_orientation+n*orientation_range/orientation_samples);
 					dummy_transform << dummy_rotation, dummy_translation, 0,0,0,1;
 					gripper_centroid_transform_in_gripper_centroid_frame = gripper_centroid_transform_before_orientation_loop*dummy_transform;
 					
 					// then transform this motion to the arm hand frame
 					gripper_transform = gripper_centroid_transform_in_gripper_centroid_frame*workspace_centroid_wrt_gripper_frame_transform_inverse*gripper_wrt_arm_hand_frame_inverse_transform;
+					//gripper_transform = workspace_centroid_wrt_gripper_frame_transform_inverse*gripper_centroid_transform_in_gripper_centroid_frame*workspace_centroid_wrt_gripper_frame_transform_inverse*gripper_wrt_arm_hand_frame_inverse_transform;
 					pcl::transformPointCloud(*gripper_cloud_downsampled_in_arm_hand_frame_xyz, *gripper_cloud_transformed_in_arm_hand_frame_xyz, gripper_transform);
 					
 					gripper_rotation    << gripper_transform(0,0), gripper_transform(0,1), gripper_transform(0,2),
