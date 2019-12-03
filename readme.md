@@ -1,5 +1,5 @@
 Dependency:
-Please install quadprog++ (https://github.com/liuq/QuadProgpp)
+Please install [quadprog++](https://github.com/liuq/QuadProgpp)
 
 To run this algorithm:
 1. make sure to remove the build folder and make a new one (this is done only once):
@@ -22,7 +22,6 @@ TODO:
 1. allow supplying the transformation matrix of the camera frame with respect to end-effector frame as input.
 2. allow supplying the transformation matrix of the gripper frame with respect to end-effector frame as input.
 
-More details on the algorithm can be found in this IROS 2019 paper:
-http://eprints.lincoln.ac.uk/36370/1/IROS19_1656_MS.pdf
+More details on the algorithm can be found in this [IROS 2019 paper](http://eprints.lincoln.ac.uk/36370/1/IROS19_1656_MS.pdf):
 
 Have fun!
