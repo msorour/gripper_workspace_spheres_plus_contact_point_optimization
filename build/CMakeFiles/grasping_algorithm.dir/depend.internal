@@ -3,6 +3,8 @@
 
 CMakeFiles/grasping_algorithm.dir/grasping_algorithm.cpp.o
  /home/business/gripper_workspace_spheres_grasping_algorithm_basic/grasping_algorithm.cpp
+ /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/Array.hh
+ /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/QuadProg++.hh
  /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/declarations.h
  /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/grasping_algorithm.h
  /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/useful_implementations.h

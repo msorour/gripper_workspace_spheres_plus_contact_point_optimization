@@ -15,7 +15,8 @@ reset && cmake .. && make -j7 && ./grasping_algorithm ../gripper_pcd_model/alleg
 #include "include/useful_implementations.h"
 #include "include/grasping_algorithm.h"
 #include <math.h>
-//#include "include/QuadProg++.hh"
+#include "include/QuadProg++.hh"
+//#include "QuadProg++.hh"
 
 
 int main (int argc, char** argv){

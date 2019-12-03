@@ -27,6 +27,28 @@ include/grasping_algorithm.h
 /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/grasping_algorithm.h
 math.h
 -
+include/QuadProg++.hh
+/home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/QuadProg++.hh
+
+/home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/Array.hh
+set
+-
+stdexcept
+-
+iostream
+-
+iomanip
+-
+cmath
+-
+cstdlib
+-
+stdexcept
+-
+
+/home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/QuadProg++.hh
+Array.hh
+/home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/Array.hh
 
 /home/business/gripper_workspace_spheres_grasping_algorithm_basic/include/declarations.h
 
