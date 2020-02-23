@@ -262,11 +262,11 @@ int main (int argc, char** argv){
 		id="min sphere thumb";
 		scene_cloud_viewer->addSphere<pcl::PointXYZ>(thumb_grasp_point, 0.01, 1.0, 0.0, 0.0, id);
 		id="min sphere index";
-		scene_cloud_viewer->addSphere<pcl::PointXYZ>(index_grasp_point, 0.01, 1.0, 0.0, 0.0, id);
+		scene_cloud_viewer->addSphere<pcl::PointXYZ>(index_grasp_point, 0.01, 0.0, 1.0, 0.0, id);
 		id="min sphere middle";
-		scene_cloud_viewer->addSphere<pcl::PointXYZ>(middle_grasp_point, 0.01, 1.0, 0.0, 0.0, id);
+		scene_cloud_viewer->addSphere<pcl::PointXYZ>(middle_grasp_point, 0.01, 0.0, 0.0, 1.0, id);
 		id="min sphere pinky";
-		scene_cloud_viewer->addSphere<pcl::PointXYZ>(pinky_grasp_point, 0.01, 1.0, 0.0, 0.0, id);
+		scene_cloud_viewer->addSphere<pcl::PointXYZ>(pinky_grasp_point, 0.01, 1.0, 1.0, 1.0, id);
 		
 	}
 	else if(gripper_model == "franka_gripper"){

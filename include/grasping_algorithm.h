@@ -2707,8 +2707,8 @@ void optimizing_contact_points(void){
 	Eigen::MatrixXd G(12,12);
   Eigen::VectorXd g(12);
   
-	Eigen::MatrixXd A(10,12);
-	Eigen::VectorXd B(10);
+	Eigen::MatrixXd A(24,12);
+	Eigen::VectorXd B(24);
 	
 	quadprogpp::Matrix<double> G2, CE, CI;
   quadprogpp::Vector<double> g0, ce0, ci0, x2;
@@ -2727,7 +2727,7 @@ void optimizing_contact_points(void){
        0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0,
        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0,
        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2;
-  
+  /*
   A <<  0, -1, 0, 0, 0, 0, 0,  1, 0, 0, 0, 0,    // C#1 : thumb & middle y-coordinates must be almost equal
         0,  1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0,    // C#2 : thumb & middle y-coordinates must be almost equal
         -1, 0, 0, 0, 0, 0,  1, 0, 0, 0, 0, 0,    // C#3 : thumb & middle x-coordinates must be almost equal
@@ -2745,11 +2745,42 @@ void optimizing_contact_points(void){
         //0, 0, 0, 0,  1, 0, 0, -2, 0, 0,  1, 0,   // C#12: index & middle y-coordinates distance must be almost equal to that of pinky and middle to ensure zero moment on object
         //0, 0, 0, 0,  1, 0, 0,  0, 0, 0, -1, 0,   // C#13: index & middle y-coordinates distance must be almost equal to that of pinky and middle to ensure zero moment on object
         //0, 0, 0, 0, -1, 0, 0,  0, 0, 0,  1, 0;   // C#14: index & middle y-coordinates distance must be almost equal to that of pinky and middle to ensure zero moment on object
+  */
   
+  // decision variable is constrained to lie in the gripper workspace ellipsoid(cube)
+  A <<  -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         
+         0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,
+         
+         0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,
+         
+         0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1;
+        
   
   double delta1 = 0.003, delta2 = 0.035, delta3 = 0.005;
   
-  B << delta1, delta1, delta1, delta1, delta1, delta1, delta1, delta1, -delta2, -delta2;
+  //B << delta1, delta1, delta1, delta1, delta1, delta1, delta1, delta1, -delta2, -delta2;
+  
   
   n = 12;
   G2.resize(n, n);
@@ -2795,6 +2826,15 @@ void optimizing_contact_points(void){
 	cout << "number of middle spheres = " << middle_workspace_active_spheres_offset_best->size() << endl;
 	cout << "number of pinky spheres  = " << pinky_workspace_active_spheres_offset_best->size() << endl;
 	
+	cout << "thumb_workspace_active_spheres_offset_best  = " << thumb_workspace_active_spheres_offset_best->points[0].x <<", "<< thumb_workspace_active_spheres_offset_best->points[0].y <<", "<< thumb_workspace_active_spheres_offset_best->points[0].z << endl;
+	cout << "index_workspace_active_spheres_offset_best  = " << index_workspace_active_spheres_offset_best->points[0].x <<", "<< index_workspace_active_spheres_offset_best->points[0].y <<", "<< index_workspace_active_spheres_offset_best->points[0].z << endl;
+	cout << "middle_workspace_active_spheres_offset_best = " << middle_workspace_active_spheres_offset_best->points[0].x <<", "<< middle_workspace_active_spheres_offset_best->points[0].y <<", "<< middle_workspace_active_spheres_offset_best->points[0].z << endl;
+	cout << "pinky_workspace_active_spheres_offset_best  = " << pinky_workspace_active_spheres_offset_best->points[0].x <<", "<< pinky_workspace_active_spheres_offset_best->points[0].y <<", "<< pinky_workspace_active_spheres_offset_best->points[0].z << endl;
+	
+	cout << "thumb_workspace_active_spheres_parameter_best  = " << thumb_workspace_active_spheres_parameter_best->points[0].x <<", "<< thumb_workspace_active_spheres_parameter_best->points[0].y <<", "<< thumb_workspace_active_spheres_parameter_best->points[0].z << endl;
+	cout << "index_workspace_active_spheres_parameter_best  = " << index_workspace_active_spheres_parameter_best->points[0].x <<", "<< index_workspace_active_spheres_parameter_best->points[0].y <<", "<< index_workspace_active_spheres_parameter_best->points[0].z << endl;
+	cout << "middle_workspace_active_spheres_parameter_best  = " << middle_workspace_active_spheres_parameter_best->points[0].x <<", "<< middle_workspace_active_spheres_parameter_best->points[0].y <<", "<< middle_workspace_active_spheres_parameter_best->points[0].z << endl;
+	cout << "pinky_workspace_active_spheres_parameter_best  = " << pinky_workspace_active_spheres_parameter_best->points[0].x <<", "<< pinky_workspace_active_spheres_parameter_best->points[0].y <<", "<< pinky_workspace_active_spheres_parameter_best->points[0].z << endl;
 	
 	
   for(unsigned int i=0; i<thumb_workspace_active_spheres_offset_best->size(); i++){
@@ -2818,6 +2858,8 @@ void optimizing_contact_points(void){
           // cost function
 	        // 1/2 * xT * G * x + g0 * x
 	        // x = [ Pfx Pfy Pfz ]T  -> f: finger index (thumb, index, middle, pinky), x: finger end tip point
+	        
+	        /*
 	        g(0)= -2*Po1x;
 	        g(1)= -2*Po1y;
 	        g(2)= -2*Po1z;
@@ -2831,7 +2873,7 @@ void optimizing_contact_points(void){
 	        g(10)=-2*Po4y;
 	        g(11)=-2*Po4z;
 	        additional_element = pow(Po1x,2) + pow(Po1y,2) + pow(Po1z,2) + pow(Po2x,2) + pow(Po2y,2) + pow(Po2z,2) + pow(Po3x,2) + pow(Po3y,2) + pow(Po3z,2) + pow(Po4x,2) + pow(Po4y,2) + pow(Po4z,2);
-	        
+	        */
 	        {for (int s=0; s<n; s++)	
 		        for (int t=0; t<n; t++)
 			        G2[s][t] = G(s,t);}
@@ -2840,6 +2882,34 @@ void optimizing_contact_points(void){
 	        
           
           // inequality constraints
+          B <<  thumb_workspace_active_spheres_offset_best->points[i].x + thumb_workspace_active_spheres_parameter_best->points[i].x,
+               -thumb_workspace_active_spheres_offset_best->points[i].x + thumb_workspace_active_spheres_parameter_best->points[i].x,
+                thumb_workspace_active_spheres_offset_best->points[i].y + thumb_workspace_active_spheres_parameter_best->points[i].y,
+               -thumb_workspace_active_spheres_offset_best->points[i].y + thumb_workspace_active_spheres_parameter_best->points[i].y,
+                thumb_workspace_active_spheres_offset_best->points[i].z + thumb_workspace_active_spheres_parameter_best->points[i].z,
+               -thumb_workspace_active_spheres_offset_best->points[i].z + thumb_workspace_active_spheres_parameter_best->points[i].z,
+                
+                index_workspace_active_spheres_offset_best->points[i].x + index_workspace_active_spheres_parameter_best->points[i].x,
+               -index_workspace_active_spheres_offset_best->points[i].x + index_workspace_active_spheres_parameter_best->points[i].x,
+                index_workspace_active_spheres_offset_best->points[i].y + index_workspace_active_spheres_parameter_best->points[i].y,
+               -index_workspace_active_spheres_offset_best->points[i].y + index_workspace_active_spheres_parameter_best->points[i].y,
+                index_workspace_active_spheres_offset_best->points[i].z + index_workspace_active_spheres_parameter_best->points[i].z,
+               -index_workspace_active_spheres_offset_best->points[i].z + index_workspace_active_spheres_parameter_best->points[i].z,
+                
+                middle_workspace_active_spheres_offset_best->points[i].x + middle_workspace_active_spheres_parameter_best->points[i].x,
+               -middle_workspace_active_spheres_offset_best->points[i].x + middle_workspace_active_spheres_parameter_best->points[i].x,
+                middle_workspace_active_spheres_offset_best->points[i].y + middle_workspace_active_spheres_parameter_best->points[i].y,
+               -middle_workspace_active_spheres_offset_best->points[i].y + middle_workspace_active_spheres_parameter_best->points[i].y,
+                middle_workspace_active_spheres_offset_best->points[i].z + middle_workspace_active_spheres_parameter_best->points[i].z,
+               -middle_workspace_active_spheres_offset_best->points[i].z + middle_workspace_active_spheres_parameter_best->points[i].z,
+                
+                pinky_workspace_active_spheres_offset_best->points[i].x + pinky_workspace_active_spheres_parameter_best->points[i].x,
+               -pinky_workspace_active_spheres_offset_best->points[i].x + pinky_workspace_active_spheres_parameter_best->points[i].x,
+                pinky_workspace_active_spheres_offset_best->points[i].y + pinky_workspace_active_spheres_parameter_best->points[i].y,
+               -pinky_workspace_active_spheres_offset_best->points[i].y + pinky_workspace_active_spheres_parameter_best->points[i].y,
+                pinky_workspace_active_spheres_offset_best->points[i].z + pinky_workspace_active_spheres_parameter_best->points[i].z,
+               -pinky_workspace_active_spheres_offset_best->points[i].z + pinky_workspace_active_spheres_parameter_best->points[i].z;
+                
           // A*x + B >= 0
 	        /////////////////////
 	        {for (int s=0; s<n; s++)
@@ -2862,8 +2932,27 @@ void optimizing_contact_points(void){
 			        is >> ce0[s] >> ch;}
 	        
 	        
+	        // initializing the decision varible
+	        x2[0]  = thumb_workspace_active_spheres_offset_best->points[i].x;
+	        x2[1]  = thumb_workspace_active_spheres_offset_best->points[i].y;
+	        x2[2]  = thumb_workspace_active_spheres_offset_best->points[i].z;
+	        
+	        x2[3]  = index_workspace_active_spheres_offset_best->points[i].x;
+	        x2[4]  = index_workspace_active_spheres_offset_best->points[i].y;
+	        x2[5]  = index_workspace_active_spheres_offset_best->points[i].z;
+	        
+	        x2[6]  = middle_workspace_active_spheres_offset_best->points[i].x;
+	        x2[7]  = middle_workspace_active_spheres_offset_best->points[i].y;
+	        x2[8]  = middle_workspace_active_spheres_offset_best->points[i].z;
+	        
+	        x2[9]  = pinky_workspace_active_spheres_offset_best->points[i].x;
+	        x2[10] = pinky_workspace_active_spheres_offset_best->points[i].y;
+	        x2[11] = pinky_workspace_active_spheres_offset_best->points[i].z;
+	        
 	        // solve
-	        cost.push_back( solve_quadprog(G2, g0, CE, ce0, CI, ci0, x2) + additional_element );
+	        //cost.push_back( solve_quadprog(G2, g0, CE, ce0, CI, ci0, x2) + additional_element );
+	        cost.push_back( solve_quadprog(G2, g0, CE, ce0, CI, ci0, x2) );
+	        
 	        thumb_point_x.push_back( x2[0] );
 	        thumb_point_y.push_back( x2[1] );
 	        thumb_point_z.push_back( x2[2] );
@@ -2905,38 +2994,62 @@ void optimizing_contact_points(void){
 	
 	
 	// Draw the result graping points
+	/*
 	thumb_grasp_point.x = thumb_point_x[index_of_min];
 	thumb_grasp_point.y = thumb_point_y[index_of_min];
 	thumb_grasp_point.z = thumb_point_z[index_of_min];
+	*/
+	thumb_grasp_point.x = thumb_point_x[index_of_max];
+	thumb_grasp_point.y = thumb_point_y[index_of_max];
+	thumb_grasp_point.z = thumb_point_z[index_of_max];
+	
 	thumb_grasp_point_4d << thumb_grasp_point.x, thumb_grasp_point.y, thumb_grasp_point.z, 1;
-	thumb_grasp_point_4d = best_gripper_transform*thumb_grasp_point_4d;
+	thumb_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*thumb_grasp_point_4d;
 	thumb_grasp_point.x = thumb_grasp_point_4d(0);
 	thumb_grasp_point.y = thumb_grasp_point_4d(1);
 	thumb_grasp_point.z = thumb_grasp_point_4d(2);
 	
+	/*
 	index_grasp_point.x = index_point_x[index_of_min];
 	index_grasp_point.y = index_point_y[index_of_min];
 	index_grasp_point.z = index_point_z[index_of_min];
+	*/
+	index_grasp_point.x = index_point_x[index_of_max];
+	index_grasp_point.y = index_point_y[index_of_max];
+	index_grasp_point.z = index_point_z[index_of_max];
+	
 	index_grasp_point_4d << index_grasp_point.x, index_grasp_point.y, index_grasp_point.z, 1;
-	index_grasp_point_4d = best_gripper_transform*index_grasp_point_4d;
+	index_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*index_grasp_point_4d;
 	index_grasp_point.x = index_grasp_point_4d(0);
 	index_grasp_point.y = index_grasp_point_4d(1);
 	index_grasp_point.z = index_grasp_point_4d(2);
 	
+	/*
 	middle_grasp_point.x = middle_point_x[index_of_min];
 	middle_grasp_point.y = middle_point_y[index_of_min];
 	middle_grasp_point.z = middle_point_z[index_of_min];
+	*/
+	middle_grasp_point.x = middle_point_x[index_of_max];
+	middle_grasp_point.y = middle_point_y[index_of_max];
+	middle_grasp_point.z = middle_point_z[index_of_max];
+	
 	middle_grasp_point_4d << middle_grasp_point.x, middle_grasp_point.y, middle_grasp_point.z, 1;
-	middle_grasp_point_4d = best_gripper_transform*middle_grasp_point_4d;
+	middle_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*middle_grasp_point_4d;
 	middle_grasp_point.x = middle_grasp_point_4d(0);
 	middle_grasp_point.y = middle_grasp_point_4d(1);
 	middle_grasp_point.z = middle_grasp_point_4d(2);
 	
+	/*
 	pinky_grasp_point.x = pinky_point_x[index_of_min];
 	pinky_grasp_point.y = pinky_point_y[index_of_min];
 	pinky_grasp_point.z = pinky_point_z[index_of_min];
+	*/
+	pinky_grasp_point.x = pinky_point_x[index_of_max];
+	pinky_grasp_point.y = pinky_point_y[index_of_max];
+	pinky_grasp_point.z = pinky_point_z[index_of_max];
+	
 	pinky_grasp_point_4d << pinky_grasp_point.x, pinky_grasp_point.y, pinky_grasp_point.z, 1;
-	pinky_grasp_point_4d = best_gripper_transform*pinky_grasp_point_4d;
+	pinky_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*pinky_grasp_point_4d;
 	pinky_grasp_point.x = pinky_grasp_point_4d(0);
 	pinky_grasp_point.y = pinky_grasp_point_4d(1);
 	pinky_grasp_point.z = pinky_grasp_point_4d(2);
