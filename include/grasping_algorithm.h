@@ -2786,7 +2786,7 @@ void optimizing_contact_points(void){
   G2.resize(n, n);
   g0.resize(n);
   
-  p = 10;
+  p = 24;
   CI.resize(n, p);
   ci0.resize(p);
   
@@ -2837,88 +2837,67 @@ void optimizing_contact_points(void){
 	cout << "pinky_workspace_active_spheres_parameter_best  = " << pinky_workspace_active_spheres_parameter_best->points[0].x <<", "<< pinky_workspace_active_spheres_parameter_best->points[0].y <<", "<< pinky_workspace_active_spheres_parameter_best->points[0].z << endl;
 	
 	
-  for(unsigned int i=0; i<thumb_workspace_active_spheres_offset_best->size(); i++){
-    Po1x = thumb_workspace_active_spheres_offset_best->points[i].x;
-    Po1y = thumb_workspace_active_spheres_offset_best->points[i].y;
-    Po1z = thumb_workspace_active_spheres_offset_best->points[i].z;
-    for(unsigned int j=0; j<index_workspace_active_spheres_offset_best->size(); j++){
-      Po2x = index_workspace_active_spheres_offset_best->points[i].x;
-      Po2y = index_workspace_active_spheres_offset_best->points[i].y;
-      Po2z = index_workspace_active_spheres_offset_best->points[i].z;
-      for(unsigned int k=0; k<middle_workspace_active_spheres_offset_best->size(); k++){
-        Po3x = middle_workspace_active_spheres_offset_best->points[i].x;
-        Po3y = middle_workspace_active_spheres_offset_best->points[i].y;
-        Po3z = middle_workspace_active_spheres_offset_best->points[i].z;
-        for(unsigned int l=0; l<pinky_workspace_active_spheres_offset_best->size(); l++){
-          Po4x = pinky_workspace_active_spheres_offset_best->points[i].x;
-          Po4y = pinky_workspace_active_spheres_offset_best->points[i].y;
-          Po4z = pinky_workspace_active_spheres_offset_best->points[i].z;
+  //for(unsigned int i=0; i<thumb_workspace_active_spheres_offset_best->size(); i++){
+  //  for(unsigned int j=0; j<index_workspace_active_spheres_offset_best->size(); j++){
+  //    for(unsigned int k=0; k<middle_workspace_active_spheres_offset_best->size(); k++){
+  //			for(unsigned int l=0; l<pinky_workspace_active_spheres_offset_best->size(); l++){
+  for(unsigned int i=0; i<1; i++){
+    for(unsigned int j=0; j<1; j++){
+      for(unsigned int k=0; k<1; k++){
+        for(unsigned int l=0; l<1; l++){
           
-          
+          //
           // cost function
 	        // 1/2 * xT * G * x + g0 * x
 	        // x = [ Pfx Pfy Pfz ]T  -> f: finger index (thumb, index, middle, pinky), x: finger end tip point
 	        
-	        /*
-	        g(0)= -2*Po1x;
-	        g(1)= -2*Po1y;
-	        g(2)= -2*Po1z;
-	        g(3)= -2*Po2x;
-	        g(4)= -2*Po2y;
-	        g(5)= -2*Po2z;
-	        g(6)= -2*Po3x;
-	        g(7)= -2*Po3y;
-	        g(8)= -2*Po3z;
-	        g(9)= -2*Po4x;
-	        g(10)=-2*Po4y;
-	        g(11)=-2*Po4z;
-	        additional_element = pow(Po1x,2) + pow(Po1y,2) + pow(Po1z,2) + pow(Po2x,2) + pow(Po2y,2) + pow(Po2z,2) + pow(Po3x,2) + pow(Po3y,2) + pow(Po3z,2) + pow(Po4x,2) + pow(Po4y,2) + pow(Po4z,2);
-	        */
+	        // to maximize instead of minimize !!!
+	        g(0)= -1000; g(1)= -1000; g(2)= -1000; g(3)= -1000; g(4)= -1000; g(5)= -1000; g(6)= -1000; g(7)= -1000; g(8)= -1000; g(9)= -1000; g(10)= -1000; g(11)= -1000;
+	        	        
 	        {for (int s=0; s<n; s++)	
 		        for (int t=0; t<n; t++)
 			        G2[s][t] = G(s,t);}
 	        {for (int s=0; s<n; s++)
 	          g0[s] = g(s);}
 	        
-          
+          //
           // inequality constraints
-          B <<  thumb_workspace_active_spheres_offset_best->points[i].x + thumb_workspace_active_spheres_parameter_best->points[i].x,
-               -thumb_workspace_active_spheres_offset_best->points[i].x + thumb_workspace_active_spheres_parameter_best->points[i].x,
-                thumb_workspace_active_spheres_offset_best->points[i].y + thumb_workspace_active_spheres_parameter_best->points[i].y,
-               -thumb_workspace_active_spheres_offset_best->points[i].y + thumb_workspace_active_spheres_parameter_best->points[i].y,
-                thumb_workspace_active_spheres_offset_best->points[i].z + thumb_workspace_active_spheres_parameter_best->points[i].z,
-               -thumb_workspace_active_spheres_offset_best->points[i].z + thumb_workspace_active_spheres_parameter_best->points[i].z,
-                
-                index_workspace_active_spheres_offset_best->points[i].x + index_workspace_active_spheres_parameter_best->points[i].x,
-               -index_workspace_active_spheres_offset_best->points[i].x + index_workspace_active_spheres_parameter_best->points[i].x,
-                index_workspace_active_spheres_offset_best->points[i].y + index_workspace_active_spheres_parameter_best->points[i].y,
-               -index_workspace_active_spheres_offset_best->points[i].y + index_workspace_active_spheres_parameter_best->points[i].y,
-                index_workspace_active_spheres_offset_best->points[i].z + index_workspace_active_spheres_parameter_best->points[i].z,
-               -index_workspace_active_spheres_offset_best->points[i].z + index_workspace_active_spheres_parameter_best->points[i].z,
-                
-                middle_workspace_active_spheres_offset_best->points[i].x + middle_workspace_active_spheres_parameter_best->points[i].x,
-               -middle_workspace_active_spheres_offset_best->points[i].x + middle_workspace_active_spheres_parameter_best->points[i].x,
-                middle_workspace_active_spheres_offset_best->points[i].y + middle_workspace_active_spheres_parameter_best->points[i].y,
-               -middle_workspace_active_spheres_offset_best->points[i].y + middle_workspace_active_spheres_parameter_best->points[i].y,
-                middle_workspace_active_spheres_offset_best->points[i].z + middle_workspace_active_spheres_parameter_best->points[i].z,
-               -middle_workspace_active_spheres_offset_best->points[i].z + middle_workspace_active_spheres_parameter_best->points[i].z,
-                
-                pinky_workspace_active_spheres_offset_best->points[i].x + pinky_workspace_active_spheres_parameter_best->points[i].x,
-               -pinky_workspace_active_spheres_offset_best->points[i].x + pinky_workspace_active_spheres_parameter_best->points[i].x,
-                pinky_workspace_active_spheres_offset_best->points[i].y + pinky_workspace_active_spheres_parameter_best->points[i].y,
-               -pinky_workspace_active_spheres_offset_best->points[i].y + pinky_workspace_active_spheres_parameter_best->points[i].y,
-                pinky_workspace_active_spheres_offset_best->points[i].z + pinky_workspace_active_spheres_parameter_best->points[i].z,
-               -pinky_workspace_active_spheres_offset_best->points[i].z + pinky_workspace_active_spheres_parameter_best->points[i].z;
-                
           // A*x + B >= 0
-	        /////////////////////
-	        {for (int s=0; s<n; s++)
+          B <<  thumb_workspace_active_spheres_offset_best->points[i].x + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].x,
+               -thumb_workspace_active_spheres_offset_best->points[i].x + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].x,
+                thumb_workspace_active_spheres_offset_best->points[i].y + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].y,
+               -thumb_workspace_active_spheres_offset_best->points[i].y + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].y,
+                thumb_workspace_active_spheres_offset_best->points[i].z + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].z,
+               -thumb_workspace_active_spheres_offset_best->points[i].z + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].z,
+                
+                index_workspace_active_spheres_offset_best->points[j].x + 0.6*index_workspace_active_spheres_parameter_best->points[j].x,
+               -index_workspace_active_spheres_offset_best->points[j].x + 0.6*index_workspace_active_spheres_parameter_best->points[j].x,
+                index_workspace_active_spheres_offset_best->points[j].y + 0.6*index_workspace_active_spheres_parameter_best->points[j].y,
+               -index_workspace_active_spheres_offset_best->points[j].y + 0.6*index_workspace_active_spheres_parameter_best->points[j].y,
+                index_workspace_active_spheres_offset_best->points[j].z + 0.6*index_workspace_active_spheres_parameter_best->points[j].z,
+               -index_workspace_active_spheres_offset_best->points[j].z + 0.6*index_workspace_active_spheres_parameter_best->points[j].z,
+                
+                middle_workspace_active_spheres_offset_best->points[k].x + 0.6*middle_workspace_active_spheres_parameter_best->points[k].x,
+               -middle_workspace_active_spheres_offset_best->points[k].x + 0.6*middle_workspace_active_spheres_parameter_best->points[k].x,
+                middle_workspace_active_spheres_offset_best->points[k].y + 0.6*middle_workspace_active_spheres_parameter_best->points[k].y,
+               -middle_workspace_active_spheres_offset_best->points[k].y + 0.6*middle_workspace_active_spheres_parameter_best->points[k].y,
+                middle_workspace_active_spheres_offset_best->points[k].z + 0.6*middle_workspace_active_spheres_parameter_best->points[k].z,
+               -middle_workspace_active_spheres_offset_best->points[k].z + 0.6*middle_workspace_active_spheres_parameter_best->points[k].z,
+                
+                pinky_workspace_active_spheres_offset_best->points[l].x + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].x,
+               -pinky_workspace_active_spheres_offset_best->points[l].x + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].x,
+                pinky_workspace_active_spheres_offset_best->points[l].y + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].y,
+               -pinky_workspace_active_spheres_offset_best->points[l].y + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].y,
+                pinky_workspace_active_spheres_offset_best->points[l].z + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].z,
+               -pinky_workspace_active_spheres_offset_best->points[l].z + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].z;
+          
+          {for (int s=0; s<n; s++)
 	          for (int t=0; t<p; t++)
 		          CI[s][t] = A(t,s);}
 	        {for (int s=0; s<p; s++)
 			      ci0[s] = B(s);}
-	        
-	        
+	        	        
+	        //
 	        // equality constraints (we don't have any, so set to zero!)
 	        // A*x + B = 0
 	        ///////////////////////
@@ -2930,25 +2909,8 @@ void optimizing_contact_points(void){
           {std::istringstream is("0.0 ");
 		        for (int s=0; s<m; s++)
 			        is >> ce0[s] >> ch;}
-	        
-	        
-	        // initializing the decision varible
-	        x2[0]  = thumb_workspace_active_spheres_offset_best->points[i].x;
-	        x2[1]  = thumb_workspace_active_spheres_offset_best->points[i].y;
-	        x2[2]  = thumb_workspace_active_spheres_offset_best->points[i].z;
-	        
-	        x2[3]  = index_workspace_active_spheres_offset_best->points[i].x;
-	        x2[4]  = index_workspace_active_spheres_offset_best->points[i].y;
-	        x2[5]  = index_workspace_active_spheres_offset_best->points[i].z;
-	        
-	        x2[6]  = middle_workspace_active_spheres_offset_best->points[i].x;
-	        x2[7]  = middle_workspace_active_spheres_offset_best->points[i].y;
-	        x2[8]  = middle_workspace_active_spheres_offset_best->points[i].z;
-	        
-	        x2[9]  = pinky_workspace_active_spheres_offset_best->points[i].x;
-	        x2[10] = pinky_workspace_active_spheres_offset_best->points[i].y;
-	        x2[11] = pinky_workspace_active_spheres_offset_best->points[i].z;
-	        
+	        	        
+	        //
 	        // solve
 	        //cost.push_back( solve_quadprog(G2, g0, CE, ce0, CI, ci0, x2) + additional_element );
 	        cost.push_back( solve_quadprog(G2, g0, CE, ce0, CI, ci0, x2) );
@@ -2969,7 +2931,7 @@ void optimizing_contact_points(void){
 	        pinky_point_y.push_back( x2[10] );
 	        pinky_point_z.push_back( x2[11] );
 	        
-	        //std::cout << "counter = " << counter << ", cost = " << cost.back() << endl;
+	        std::cout << "counter = " << counter << ", cost = " << cost.back() << endl;
           counter++;
           
         }
@@ -2979,6 +2941,7 @@ void optimizing_contact_points(void){
   
   int index_of_min=0;
   int index_of_max=0;
+  int index=0;
   for(unsigned int i=0; i<cost.size(); i++){
     if(cost[i]<cost[index_of_min])
       index_of_min = i;
@@ -2992,16 +2955,13 @@ void optimizing_contact_points(void){
 	std::cout << "index of max element: " << index_of_max << std::endl;
 	std::cout << "largest element     : " << cost[index_of_max] << std::endl;
 	
+	//index = index_of_max;
+	index = index_of_min;
 	
 	// Draw the result graping points
-	/*
-	thumb_grasp_point.x = thumb_point_x[index_of_min];
-	thumb_grasp_point.y = thumb_point_y[index_of_min];
-	thumb_grasp_point.z = thumb_point_z[index_of_min];
-	*/
-	thumb_grasp_point.x = thumb_point_x[index_of_max];
-	thumb_grasp_point.y = thumb_point_y[index_of_max];
-	thumb_grasp_point.z = thumb_point_z[index_of_max];
+	thumb_grasp_point.x = thumb_point_x[index];
+	thumb_grasp_point.y = thumb_point_y[index];
+	thumb_grasp_point.z = thumb_point_z[index];
 	
 	thumb_grasp_point_4d << thumb_grasp_point.x, thumb_grasp_point.y, thumb_grasp_point.z, 1;
 	thumb_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*thumb_grasp_point_4d;
@@ -3009,14 +2969,9 @@ void optimizing_contact_points(void){
 	thumb_grasp_point.y = thumb_grasp_point_4d(1);
 	thumb_grasp_point.z = thumb_grasp_point_4d(2);
 	
-	/*
-	index_grasp_point.x = index_point_x[index_of_min];
-	index_grasp_point.y = index_point_y[index_of_min];
-	index_grasp_point.z = index_point_z[index_of_min];
-	*/
-	index_grasp_point.x = index_point_x[index_of_max];
-	index_grasp_point.y = index_point_y[index_of_max];
-	index_grasp_point.z = index_point_z[index_of_max];
+	index_grasp_point.x = index_point_x[index];
+	index_grasp_point.y = index_point_y[index];
+	index_grasp_point.z = index_point_z[index];
 	
 	index_grasp_point_4d << index_grasp_point.x, index_grasp_point.y, index_grasp_point.z, 1;
 	index_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*index_grasp_point_4d;
@@ -3024,14 +2979,9 @@ void optimizing_contact_points(void){
 	index_grasp_point.y = index_grasp_point_4d(1);
 	index_grasp_point.z = index_grasp_point_4d(2);
 	
-	/*
-	middle_grasp_point.x = middle_point_x[index_of_min];
-	middle_grasp_point.y = middle_point_y[index_of_min];
-	middle_grasp_point.z = middle_point_z[index_of_min];
-	*/
-	middle_grasp_point.x = middle_point_x[index_of_max];
-	middle_grasp_point.y = middle_point_y[index_of_max];
-	middle_grasp_point.z = middle_point_z[index_of_max];
+	middle_grasp_point.x = middle_point_x[index];
+	middle_grasp_point.y = middle_point_y[index];
+	middle_grasp_point.z = middle_point_z[index];
 	
 	middle_grasp_point_4d << middle_grasp_point.x, middle_grasp_point.y, middle_grasp_point.z, 1;
 	middle_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*middle_grasp_point_4d;
@@ -3039,14 +2989,9 @@ void optimizing_contact_points(void){
 	middle_grasp_point.y = middle_grasp_point_4d(1);
 	middle_grasp_point.z = middle_grasp_point_4d(2);
 	
-	/*
-	pinky_grasp_point.x = pinky_point_x[index_of_min];
-	pinky_grasp_point.y = pinky_point_y[index_of_min];
-	pinky_grasp_point.z = pinky_point_z[index_of_min];
-	*/
-	pinky_grasp_point.x = pinky_point_x[index_of_max];
-	pinky_grasp_point.y = pinky_point_y[index_of_max];
-	pinky_grasp_point.z = pinky_point_z[index_of_max];
+	pinky_grasp_point.x = pinky_point_x[index];
+	pinky_grasp_point.y = pinky_point_y[index];
+	pinky_grasp_point.z = pinky_point_z[index];
 	
 	pinky_grasp_point_4d << pinky_grasp_point.x, pinky_grasp_point.y, pinky_grasp_point.z, 1;
 	pinky_grasp_point_4d = best_gripper_transform*gripper_wrt_arm_hand_frame_transform*pinky_grasp_point_4d;

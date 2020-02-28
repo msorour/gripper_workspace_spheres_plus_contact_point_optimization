@@ -286,6 +286,9 @@ int main (int argc, char** argv){
 		scene_cloud_viewer->updatePointCloud(gripper_support_point_cloud_transformed_in_arm_hand_frame_2, orange_color_again2_2,      "gripper support2 transformed ellipsoid");
 		scene_cloud_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,                   "gripper support2 transformed ellipsoid");
 	}
+	
+	transform.matrix() = best_gripper_transform*gripper_wrt_arm_hand_frame_transform;
+	scene_cloud_viewer->addCoordinateSystem(0.07, transform, "best gripper frame", 0);
 
   scene_cloud_viewer->spinOnce();
   
