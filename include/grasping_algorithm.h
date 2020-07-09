@@ -72,7 +72,6 @@ void load_object_3_view_point_clouds_and_corresponding_transforms(void){
   pcl::io::loadPCDFile<pcl::PointXYZ>(file_name3, *scene_cloud_xyz_3);
 }
 
-
 void load_transformations(void){
   // camera optical frame wrt arm hand frame
   camera_depth_optical_frame_wrt_arm_hand_frame_translation << -0.051, 0.023, -0.017; // from calibration
@@ -102,7 +101,6 @@ void load_transformations(void){
   pcl::transformPointCloud(*object_plane_cloud_downsampled_in_camera_depth_optical_frame_xyz,    *object_plane_cloud_downsampled_in_arm_hand_frame_xyz,   camera_depth_optical_frame_wrt_arm_hand_frame_transform);
   pcl::transformPointCloud(*gripper_cloud_downsampled_in_gripper_frame_xyz,                      *gripper_cloud_downsampled_in_arm_hand_frame_xyz,        gripper_wrt_arm_hand_frame_transform);
 }
-
 
 void downsample_gripper_pointcloud(int desired_number_of_points){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr     allegro_hand_point_cloud                         (new pcl::PointCloud<pcl::PointXYZ>);
@@ -145,7 +143,6 @@ void downsample_gripper_pointcloud(int desired_number_of_points){
   // save downsampled cloud
   writer.write<pcl::PointXYZ>("../gripper_pcd_model/franka_gripper_model_cloud_plus_camera_downsampled_"+std::to_string(desired_number_of_points)+".pcd", *franka_gripper_point_cloud_downsampled, false);
 }
-
 
 void object_pose_approximation( pcl::PointCloud<pcl::PointXYZ> object_cloud_in_global_frame, 
                                 Eigen::Matrix4f& object_transform, 
@@ -545,12 +542,11 @@ void object_pose_approximation( pcl::PointCloud<pcl::PointXYZ> object_cloud_in_g
 	std::cout << "time spent to estimate object pose = " << time_spent << std::endl;
 }
 
-
 void object_pose_approximation_and_sampling(){
   // compute object transformation matrix
   object_pose_approximation( *object_cloud_downsampled_in_arm_hand_frame_xyz, object_transform_wrt_arm_hand_frame, object_far_point_in_pos_direction_in_global_frame, object_far_point_in_neg_direction_in_global_frame, object_major_dimensions );
   transform.matrix() = object_transform_wrt_arm_hand_frame;
-  //scene_cloud_viewer->addCoordinateSystem(0.2, transform, "object frame", 0);
+  scene_cloud_viewer->addCoordinateSystem(0.1, transform, "object frame", 0);
   
   object_rotation_wrt_arm_hand_frame    << object_transform_wrt_arm_hand_frame(0,0), object_transform_wrt_arm_hand_frame(0,1), object_transform_wrt_arm_hand_frame(0,2),
                                            object_transform_wrt_arm_hand_frame(1,0), object_transform_wrt_arm_hand_frame(1,1), object_transform_wrt_arm_hand_frame(1,2),
@@ -579,7 +575,6 @@ void object_pose_approximation_and_sampling(){
     object_centroid_in_arm_hand_frame.add( object_cloud_downsampled_in_arm_hand_frame_xyz->points[i] );
   object_centroid_in_arm_hand_frame.get(object_centroid_point_in_arm_hand_frame);
 }
-
 
 void object_plane_pose_approximation(void){
   // compute object plane transformation matrix
@@ -630,7 +625,6 @@ void construct_special_ellipsoid_point_cloud( pcl::PointCloud<pcl::PointXYZ>::Pt
     }
   }
 }
-
 
 void constructing_special_ellipsoids(void){
   // gripper support region special ellipsoid
@@ -780,7 +774,6 @@ void constructing_special_ellipsoids(void){
 	pcl::transformPointCloud(*gripper_support_point_cloud_in_gripper_frame_3, *gripper_support_point_cloud_in_arm_hand_frame_3, gripper_wrt_arm_hand_frame_transform);
 	pcl::transformPointCloud(*gripper_support_point_cloud_in_gripper_frame_4, *gripper_support_point_cloud_in_arm_hand_frame_4, gripper_wrt_arm_hand_frame_transform);
 }
-
 
 void object_plane_pose_check(void){
   // Fixing object plane transformation problem !
@@ -945,7 +938,7 @@ void load_allegro_right_hand_workspace_spheres( pcl::PointCloud<pcl::PointXYZ>::
   
   
   
-  
+  /*
   // filtering thumb workspace spheres
   workspace_convex_offset.clear();
   workspace_convex_parameter.clear();
@@ -1009,11 +1002,10 @@ void load_allegro_right_hand_workspace_spheres( pcl::PointCloud<pcl::PointXYZ>::
     pinky_workspace_convex_offset->points.push_back( workspace_convex_offset.points[i] );
     pinky_workspace_convex_parameter->points.push_back( workspace_convex_parameter.points[i] );
   }
-  
+  */
   
   
 }
-
 
 void load_franka_gripper_workspace_spheres( pcl::PointCloud<pcl::PointXYZ>::Ptr& gripper_augmented_workspace_xyz, 
                                             Eigen::Vector3f& gripper_workspace_centroid_point_in_gripper_frame,
@@ -1319,7 +1311,6 @@ void point_cloud_as_set_of_spheres_fixed_radius( pcl::PointCloud<pcl::PointXYZ>:
   
 }
 
-
 void point_cloud_as_set_of_spheres( int desired_number_of_spheres,                                                       // input
                                     pcl::PointCloud<pcl::PointXYZ>::Ptr&  finger_workspace_cloud_xyz,                    // input
                                     double radius_of_smallest_sphere,                                                    // input
@@ -1463,7 +1454,6 @@ void point_cloud_as_set_of_spheres( int desired_number_of_spheres,              
   
   
 }
-
 
 void point_cloud_as_set_of_spheres_fixed_radius_paper_photos(  pcl::PointCloud<pcl::PointXYZ>::Ptr&  finger_workspace_cloud_xyz,            // input
                                                        double sphere_radius,                                                                // input
@@ -1817,7 +1807,6 @@ void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pc
 
 }
 
-
 void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_1,                             // input
                                                               Eigen::Matrix4f tm1,                                                                 // input
                                                               pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_2,                             // input
@@ -1967,8 +1956,6 @@ void registering_downsampling_segmenting_3_view_point_clouds( pcl::PointCloud<pc
 }
 
 
-
-
 void downsampling_segmenting_single_view_point_cloud( pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_1,                             // input
 																											double leaf_size,                                                                    // input
                                                       double distance_threshold,                                                           // input
@@ -2090,9 +2077,6 @@ void downsampling_segmenting_single_view_point_cloud( pcl::PointCloud<pcl::Point
 
 }
 
-
-
-
 void downsampling_segmenting_single_view_point_cloud_no_table( 	pcl::PointCloud<pcl::PointXYZ>::Ptr&  scene_cloud_xyz_1,                             // input
 																																double leaf_size,                                                                    // input
 										                                            double distance_threshold,                                                           // input
@@ -2121,9 +2105,6 @@ void downsampling_segmenting_single_view_point_cloud_no_table( 	pcl::PointCloud<
   }
   *object_cloud_xyz_downsampled = *scene_cloud_xyz_downsampled;
 }
-
-
-
 
 
 void evaluate_grasp_pose_candidates(void){
@@ -2595,7 +2576,6 @@ void evaluate_grasp_pose_candidates(void){
   }
 }
 
-
 void visualize_workspace_spheres_and_object_points_for_best_gripper_pose(void){
   // Draw the workspace spheres of the best gripper pose
   if(gripper_model == "allegro_right_hand"){
@@ -2687,19 +2667,6 @@ void visualize_workspace_spheres_and_object_points_for_best_gripper_pose(void){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 void optimizing_contact_points(void){
 	
   begin = clock();
@@ -2707,8 +2674,11 @@ void optimizing_contact_points(void){
 	Eigen::MatrixXd G(12,12);
   Eigen::VectorXd g(12);
   
-	Eigen::MatrixXd A(24,12);
-	Eigen::VectorXd B(24);
+	Eigen::MatrixXd A(32,12);
+	Eigen::VectorXd B(32);
+	
+	Eigen::MatrixXd C(4,12);
+	Eigen::VectorXd D(4);
 	
 	quadprogpp::Matrix<double> G2, CE, CI;
   quadprogpp::Vector<double> g0, ce0, ci0, x2;
@@ -2774,10 +2744,23 @@ void optimizing_contact_points(void){
          0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,
          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,
          0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,
-         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1;
-        
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,
+         
+        -1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0;
   
-  double delta1 = 0.003, delta2 = 0.035, delta3 = 0.005;
+  C <<   1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,
+         0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0;
+  
+  double delta1 = 0.030, delta2 = 0.035, delta3 = 0.005;
   
   //B << delta1, delta1, delta1, delta1, delta1, delta1, delta1, delta1, -delta2, -delta2;
   
@@ -2786,7 +2769,7 @@ void optimizing_contact_points(void){
   G2.resize(n, n);
   g0.resize(n);
   
-  p = 24;
+  p = 32;
   CI.resize(n, p);
   ci0.resize(p);
   
@@ -2837,14 +2820,14 @@ void optimizing_contact_points(void){
 	cout << "pinky_workspace_active_spheres_parameter_best  = " << pinky_workspace_active_spheres_parameter_best->points[0].x <<", "<< pinky_workspace_active_spheres_parameter_best->points[0].y <<", "<< pinky_workspace_active_spheres_parameter_best->points[0].z << endl;
 	
 	
-  //for(unsigned int i=0; i<thumb_workspace_active_spheres_offset_best->size(); i++){
-  //  for(unsigned int j=0; j<index_workspace_active_spheres_offset_best->size(); j++){
-  //    for(unsigned int k=0; k<middle_workspace_active_spheres_offset_best->size(); k++){
-  //			for(unsigned int l=0; l<pinky_workspace_active_spheres_offset_best->size(); l++){
-  for(unsigned int i=0; i<1; i++){
-    for(unsigned int j=0; j<1; j++){
-      for(unsigned int k=0; k<1; k++){
-        for(unsigned int l=0; l<1; l++){
+  for(unsigned int i=0; i<thumb_workspace_active_spheres_offset_best->size(); i++){
+    for(unsigned int j=0; j<index_workspace_active_spheres_offset_best->size(); j++){
+      for(unsigned int k=0; k<middle_workspace_active_spheres_offset_best->size(); k++){
+  			for(unsigned int l=0; l<pinky_workspace_active_spheres_offset_best->size(); l++){
+  //for(unsigned int i=0; i<1; i++){
+  //  for(unsigned int j=0; j<1; j++){
+  //    for(unsigned int k=0; k<1; k++){
+  //      for(unsigned int l=0; l<1; l++){
           
           //
           // cost function
@@ -2852,7 +2835,7 @@ void optimizing_contact_points(void){
 	        // x = [ Pfx Pfy Pfz ]T  -> f: finger index (thumb, index, middle, pinky), x: finger end tip point
 	        
 	        // to maximize instead of minimize !!!
-	        g(0)= -1000; g(1)= -1000; g(2)= -1000; g(3)= -1000; g(4)= -1000; g(5)= -1000; g(6)= -1000; g(7)= -1000; g(8)= -1000; g(9)= -1000; g(10)= -1000; g(11)= -1000;
+	        g(0)= -100000; g(1)= -100000; g(2)= -100000; g(3)= -100000; g(4)= -100000; g(5)= -100000; g(6)= -100000; g(7)= -100000; g(8)= -100000; g(9)= -100000; g(10)= -100000; g(11)= -100000;
 	        	        
 	        {for (int s=0; s<n; s++)	
 		        for (int t=0; t<n; t++)
@@ -2863,6 +2846,7 @@ void optimizing_contact_points(void){
           //
           // inequality constraints
           // A*x + B >= 0
+          /*
           B <<  thumb_workspace_active_spheres_offset_best->points[i].x + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].x,
                -thumb_workspace_active_spheres_offset_best->points[i].x + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].x,
                 thumb_workspace_active_spheres_offset_best->points[i].y + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].y,
@@ -2890,6 +2874,45 @@ void optimizing_contact_points(void){
                -pinky_workspace_active_spheres_offset_best->points[l].y + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].y,
                 pinky_workspace_active_spheres_offset_best->points[l].z + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].z,
                -pinky_workspace_active_spheres_offset_best->points[l].z + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].z;
+          */
+          
+          B <<  thumb_workspace_active_spheres_offset_best->points[i].x + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].x,
+               -thumb_workspace_active_spheres_offset_best->points[i].x + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].x,
+                thumb_workspace_active_spheres_offset_best->points[i].y + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].y,
+               -thumb_workspace_active_spheres_offset_best->points[i].y + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].y,
+                thumb_workspace_active_spheres_offset_best->points[i].z + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].z,
+               -thumb_workspace_active_spheres_offset_best->points[i].z + 0.6*thumb_workspace_active_spheres_parameter_best->points[i].z,
+                
+                index_workspace_active_spheres_offset_best->points[j].x + 0.6*index_workspace_active_spheres_parameter_best->points[j].x,
+               -index_workspace_active_spheres_offset_best->points[j].x + 0.6*index_workspace_active_spheres_parameter_best->points[j].x,
+                index_workspace_active_spheres_offset_best->points[j].y + 0.6*index_workspace_active_spheres_parameter_best->points[j].y,
+               -index_workspace_active_spheres_offset_best->points[j].y + 0.6*index_workspace_active_spheres_parameter_best->points[j].y,
+                index_workspace_active_spheres_offset_best->points[j].z + 0.6*index_workspace_active_spheres_parameter_best->points[j].z,
+               -index_workspace_active_spheres_offset_best->points[j].z + 0.6*index_workspace_active_spheres_parameter_best->points[j].z,
+                
+                middle_workspace_active_spheres_offset_best->points[k].x + 0.6*middle_workspace_active_spheres_parameter_best->points[k].x,
+               -middle_workspace_active_spheres_offset_best->points[k].x + 0.6*middle_workspace_active_spheres_parameter_best->points[k].x,
+                middle_workspace_active_spheres_offset_best->points[k].y + 0.6*middle_workspace_active_spheres_parameter_best->points[k].y,
+               -middle_workspace_active_spheres_offset_best->points[k].y + 0.6*middle_workspace_active_spheres_parameter_best->points[k].y,
+                middle_workspace_active_spheres_offset_best->points[k].z + 0.6*middle_workspace_active_spheres_parameter_best->points[k].z,
+               -middle_workspace_active_spheres_offset_best->points[k].z + 0.6*middle_workspace_active_spheres_parameter_best->points[k].z,
+                
+                pinky_workspace_active_spheres_offset_best->points[l].x + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].x,
+               -pinky_workspace_active_spheres_offset_best->points[l].x + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].x,
+                pinky_workspace_active_spheres_offset_best->points[l].y + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].y,
+               -pinky_workspace_active_spheres_offset_best->points[l].y + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].y,
+                pinky_workspace_active_spheres_offset_best->points[l].z + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].z,
+               -pinky_workspace_active_spheres_offset_best->points[l].z + 0.6*pinky_workspace_active_spheres_parameter_best->points[l].z,
+               
+                object_centroid_point_transformed(0) + delta1,
+               -object_centroid_point_transformed(0) + delta1,
+                object_centroid_point_transformed(0) + delta1,
+               -object_centroid_point_transformed(0) + delta1,
+                object_centroid_point_transformed(0) + delta1,
+               -object_centroid_point_transformed(0) + delta1,
+                object_centroid_point_transformed(0) + delta1,
+               -object_centroid_point_transformed(0) + delta1;
+          
           
           {for (int s=0; s<n; s++)
 	          for (int t=0; t<p; t++)
@@ -2899,8 +2922,16 @@ void optimizing_contact_points(void){
 	        	        
 	        //
 	        // equality constraints (we don't have any, so set to zero!)
-	        // A*x + B = 0
-	        ///////////////////////
+	        // C*x + D = 0
+	        D << object_centroid_point_transformed(0), object_centroid_point_transformed(0), object_centroid_point_transformed(0), object_centroid_point_transformed(0);
+	        /*
+	        {for (int s=0; s<n; s++)
+			      for (int t=0; t<m; t++)
+				      CE[s][t] = C(t,s);}
+          {for (int s=0; s<m; s++)
+			      ce0[s] = D(s);}
+	        */
+	        
 	        {std::istringstream is("0.0, "
 													        "0.0 ");
 		        for (int s=0; s<n; s++)
@@ -2909,7 +2940,8 @@ void optimizing_contact_points(void){
           {std::istringstream is("0.0 ");
 		        for (int s=0; s<m; s++)
 			        is >> ce0[s] >> ch;}
-	        	        
+	                
+	        
 	        //
 	        // solve
 	        //cost.push_back( solve_quadprog(G2, g0, CE, ce0, CI, ci0, x2) + additional_element );
@@ -3009,10 +3041,6 @@ void optimizing_contact_points(void){
   
   
 }
-
-
-
-
 
 
 
